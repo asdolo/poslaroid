@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.graphics.Color
 import android.net.wifi.WifiManager
 import android.os.Build
@@ -108,11 +109,20 @@ class MainActivity : AppCompatActivity() {
                         val customText = session.parameters["text"]?.get(0) // Get the text parameter
                         
                         if (tempFile != null) {
-                            val bitmap = BitmapFactory.decodeFile(tempFile)
-                            if (bitmap != null) {
+                            val originalBitmap = BitmapFactory.decodeFile(tempFile)
+                            if (originalBitmap != null) {
+                                // Create a new bitmap with white background
+                                val finalBitmap = Bitmap.createBitmap(originalBitmap.width, originalBitmap.height, Bitmap.Config.ARGB_8888)
+                                val canvas = Canvas(finalBitmap)
+                                
+                                // Draw white background
+                                canvas.drawColor(Color.WHITE)
+                                // Draw original bitmap on top
+                                canvas.drawBitmap(originalBitmap, 0f, 0f, null)
+                                
                                 runOnUiThread {
-                                    // Pass the custom text to the print function
-                                    printBluetooth(bitmap, customText)
+                                    // Pass the custom text to the print function with the new bitmap
+                                    printBluetooth(finalBitmap, customText)
                                 }
                                 return newFixedLengthResponse("Image received and printing started")
                             }
