@@ -1,4 +1,4 @@
-package com.gzalo.poslaroid
+package com.asdolo.poslaroid
 
 import android.content.Context
 import android.graphics.Bitmap

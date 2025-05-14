@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">POSlaroid bogobinteado</string>
+    <string name="app_name">POSlaroid con Webserver</string>
     <string name="instructions"></string>
     <string name="take_photo">Sacar Foto</string>
     <string name="flash_turn_on">Sin Flash</string>

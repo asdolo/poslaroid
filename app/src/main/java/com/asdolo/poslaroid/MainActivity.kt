@@ -1,4 +1,4 @@
-package com.gzalo.poslaroid
+package com.asdolo.poslaroid
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -29,7 +29,7 @@ import com.dantsu.escposprinter.EscPosPrinter
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnection
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections
 import com.dantsu.escposprinter.textparser.PrinterTextParserImg
-import com.gzalo.poslaroid.databinding.ActivityMainBinding
+import com.asdolo.poslaroid.databinding.ActivityMainBinding
 import fi.iki.elonen.NanoHTTPD
 import java.io.File
 import java.io.FileInputStream

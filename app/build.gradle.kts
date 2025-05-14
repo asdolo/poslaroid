@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.gzalo.poslaroid"
+    namespace = "com.asdolo.poslaroid"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.gzalo.poslaroid"
+        applicationId = "com.asdolo.poslaroid"
         minSdk = 23
         targetSdk = 34
         versionCode = 1
