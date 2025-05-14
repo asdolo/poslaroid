@@ -16,6 +16,7 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraProvider
@@ -55,6 +56,8 @@ class MainActivity : AppCompatActivity() {
     private var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private var printer: EscPosPrinter? = null
     private var connection: BluetoothConnection? = null
+    private var takePhotoMode: Boolean = false
+    private var backPressedTime: Long = 0
 
     private val requiredPermissions = mutableListOf(
         Manifest.permission.CAMERA,
@@ -126,6 +129,25 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Enable back button gesture handling
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (takePhotoMode) {
+                    takePhotoMode = false
+                    updateBackButtonVisibility()
+                } else {
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - backPressedTime > 2000) {
+                        backPressedTime = currentTime
+                        Toast.makeText(this@MainActivity, R.string.press_back_again, Toast.LENGTH_SHORT).show()
+                    } else {
+                        finish()
+                    }
+                }
+            }
+        })
+        
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
@@ -145,7 +167,14 @@ class MainActivity : AppCompatActivity() {
         viewBinding.imageCaptureButton.setOnClickListener { takePhoto() }
         viewBinding.flashToggleButton.setOnClickListener { toggleFlash() }
         viewBinding.switchCamera.setOnClickListener { switchCamera() }
-        viewBinding.mirrorCamera.setOnClickListener { mirrorCamera() }
+        viewBinding.mirrorCamera.setOnClickListener {
+            mirrorCamera()
+        }
+
+        viewBinding.backButton.setOnClickListener {
+            takePhotoMode = false
+            updateBackButtonVisibility()
+        }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 
@@ -231,7 +260,19 @@ class MainActivity : AppCompatActivity() {
         imageCapture?.flashMode = flashMode
     }
 
+    private fun updateBackButtonVisibility() {
+        viewBinding.backButton.visibility = if (takePhotoMode) View.VISIBLE else View.GONE
+        viewBinding.printing.visibility = View.INVISIBLE
+        viewBinding.viewFinder.visibility = View.VISIBLE
+        viewBinding.flashToggleButton.visibility = View.VISIBLE
+        viewBinding.switchCamera.visibility = View.VISIBLE
+        viewBinding.mirrorCamera.visibility = View.VISIBLE
+        viewBinding.footerText.visibility = View.VISIBLE
+    }
+
     private fun takePhoto() {
+        takePhotoMode = true
+        updateBackButtonVisibility()
         viewBinding.printing.visibility = View.VISIBLE
         viewBinding.viewFinder.visibility = View.INVISIBLE
         viewBinding.flashToggleButton.visibility = View.INVISIBLE
