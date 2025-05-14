@@ -2,6 +2,12 @@
 <html>
 <head>
     <title>Poslaroid Web Print</title>
+    <script>
+        window.onload = function() {
+            const date = new Date().toLocaleDateString('en-GB');
+            document.getElementById('customText').value = `[L]\n<b><font size='tall'>${date}</font></b>\n[L]Gracias!\n[L]\n[L]\n[L]`;
+        }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
@@ -52,29 +58,43 @@
             box-sizing: border-box;
             border: 2px solid #555;
             border-radius: 4px;
+            min-height: 150px;
         }
         .text-help {
             font-size: 12px;
             color: #999;
             margin: 4px 0;
         }
+        .spinner {
+            display: none;
+            width: 30px;
+            height: 30px;
+            margin: 10px auto;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #008CBA;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
-    <h1>Poslaroid Web Print</h1>
+    <h1>POSlaroid Web Print</h1>
     <div class="upload-form">
         <form id="uploadForm" enctype="multipart/form-data">
             <input type="file" id="imageInput" accept="image/*" style="display: none">
-            <label for="imageInput" class="button">Select Image</label>
+            <label for="imageInput" class="button">Seleccionar imagen</label>
             <br>
-            <input type="text" id="customText" class="text-input" 
-                placeholder="[L]<b><font size='tall'>bogos</font></b>" 
-                name="text" value="[L]<b><font size='tall'>bogos</font></b>">
-            <div class="text-help">Enter the text to be printed with the image</div>
+            <textarea id="customText" class="text-input" name="text" value=""></textarea>
+            <div class="text-help">Escribe el texto que deseas imprimir debajo de la imagen</div>
             <br>
             <img id="preview" style="display: none">
             <br>
-            <button type="submit" class="button" style="background-color: #008CBA">Print Image</button>
+            <div class="spinner" id="loadingSpinner"></div>
+            <button type="submit" class="button" style="background-color: #008CBA">Imprimir imagen</button>
         </form>
     </div>
 
@@ -87,6 +107,9 @@
 
         document.getElementById('uploadForm').onsubmit = function(e) {
             e.preventDefault();
+            const submitButton = document.querySelector('#uploadForm button[type="submit"]');
+            submitButton.style.display = 'none';
+            document.getElementById('loadingSpinner').style.display = 'block';
             const formData = new FormData();
             formData.append('image', document.getElementById('imageInput').files[0]);
             const customText = document.getElementById('customText').value || document.getElementById('customText').placeholder;
@@ -98,7 +121,11 @@
             })
             .then(response => response.text())
             .then(result => alert(result))
-            .catch(error => alert('Error: ' + error));
+            .catch(error => alert('Error: ' + error))
+            .finally(() => {
+                document.getElementById('loadingSpinner').style.display = 'none';
+                submitButton.style.display = 'inline-block';
+            });
         };
     </script>
 </body>

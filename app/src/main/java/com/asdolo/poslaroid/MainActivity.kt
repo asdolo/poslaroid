@@ -157,6 +157,10 @@ class MainActivity : AppCompatActivity() {
         )
         supportActionBar?.hide()
 
+        // Set default footer text
+        val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+        viewBinding.footerText.setText("[L]\n<b><font size='tall'>$currentDate</font></b>\n[L]Gracias!\n[L]\n[L]\n[L]")
+
         if (allPermissionsGranted()) {
             startCamera()
             mirrorCamera()
