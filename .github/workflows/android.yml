@@ -1,0 +1,46 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Bump version
+      uses: chkfung/android-version-actions@v1.2.2
+      with:
+        gradlePath: app/build.gradle.kts
+        versionCode: ${{github.run_number}}
+
+    - name: Build apk release project (APK)
+      run: ./gradlew assemble
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: app_release.apk
+        path: ./app/build/outputs/apk/release/app-release.apk
+
+    - name: Create a new release
+      uses: ncipollo/release-action@v1
+      with:
+        tag: "v${{github.run_number}}"
+        name: "v${{github.run_number}}"
+        artifacts: "./app/build/outputs/apk/release/app-release.apk"
